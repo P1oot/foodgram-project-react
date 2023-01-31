@@ -49,7 +49,6 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        on_delete=models.SET_NULL,
         verbose_name='Ингредиент',
         help_text='Ингредиент',
     )
