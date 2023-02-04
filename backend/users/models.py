@@ -5,8 +5,8 @@ class User(AbstractUser):
     USER = 'user'
     ADMIN = 'admin'
     ROLE_CHOICES = [
-        USER, 'user',
-        ADMIN, 'admin',
+        (USER, 'user'),
+        (ADMIN, 'admin'),
     ]
     role = models.CharField(
         max_length=20,
@@ -19,6 +19,10 @@ class User(AbstractUser):
     @property
     def is_admin(self):
         return self.role == self.ADMIN or self.is_superuser
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
     def __str__(self) -> str:
         return self.username
@@ -43,4 +47,6 @@ class Follow(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
         unique_together = ['user', 'author']

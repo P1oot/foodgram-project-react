@@ -26,6 +26,13 @@ class Ingredient(models.Model):
         max_length=10,
     )
 
+    class Meta:
+        verbose_name = 'Ингредиет'
+        verbose_name_plural = 'Ингредиенты'
+
+    def __str__(self) -> str:
+        return self.name
+
 
 class Recipe(models.Model):
     author = models.ForeignKey(
@@ -41,21 +48,18 @@ class Recipe(models.Model):
         help_text='Название блюда',
         max_length=200,
     )
-    tags = models.ForeignKey(
+    tags = models.ManyToManyField(
         Tag,
-        on_delete=models.SET_NULL,
+        related_name='recipe',
         verbose_name='Тег',
         help_text='Тег',
     )
     ingredients = models.ManyToManyField(
         Ingredient,
+        related_name='recipe',
+        through='IngredientAmount',
         verbose_name='Ингредиент',
         help_text='Ингредиент',
-    )
-    count = models.FloatField(
-        verbose_name='Количесво',
-        help_text='Количество продукта',
-        max_length=5,
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
@@ -65,11 +69,39 @@ class Recipe(models.Model):
         verbose_name='Описание',
         help_text='Опишите блюдо и способ приготовления',
     )
-    image = models.ImageField(
-        verbose_name='Картинка',
-        upload_to='recipe/',
-        blank=True
+    # image = models.ImageField(
+    #     verbose_name='Картинка',
+    #     upload_to='recipe/',
+    #     blank=True
+    # )
+
+    class Meta:
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
+        ordering = ['-pub_date']
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class IngredientAmount(models.Model):
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+        verbose_name='Ингредиент',
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт',
+    )
+    amount = models.FloatField(
+        verbose_name='Количесво',
+        help_text='Количество продукта',
+        max_length=5,
     )
 
     class Meta:
-        ordering = ['-pub_date']
+        verbose_name = 'Количество ингредиента'
+        verbose_name_plural = 'Количество ингредиентов'
+        unique_together = ['ingredient', 'recipe']
