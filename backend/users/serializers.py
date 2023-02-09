@@ -20,12 +20,21 @@ class UserSerializer(serializers.ModelSerializer):
             'password',
             'is_subscribed',
         )
-        extra_kwards = {
-            'password': {'write_only': True},
-        }
+        extra_kwargs = {'password': {'write_only': True}}
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
         return user.follower.filter(author=obj).exists()
+
+    def create(self, data):
+        user = User(
+            email=data['email'],
+            username=data['username'],
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+        )
+        user.set_password(data['password'])
+        user.save()
+        return user
