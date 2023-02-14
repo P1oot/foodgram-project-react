@@ -39,7 +39,7 @@ class Recipe(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='recipe',
+        related_name='recipes',
         verbose_name='Автор',
         help_text='Автор рецепта',
     )
@@ -51,13 +51,13 @@ class Recipe(models.Model):
     )
     tags = models.ManyToManyField(
         Tag,
-        related_name='recipe',
+        related_name='recipes',
         verbose_name='Тег',
         help_text='Тег',
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        related_name='recipe',
+        related_name='recipes',
         through='IngredientAmount',
         verbose_name='Ингредиент',
         help_text='Ингредиент',
@@ -73,7 +73,6 @@ class Recipe(models.Model):
     # image = models.ImageField(
     #     verbose_name='Картинка',
     #     upload_to='recipe/',
-    #     blank=True
     # )
 
     class Meta:
@@ -86,15 +85,17 @@ class Recipe(models.Model):
 
 
 class IngredientAmount(models.Model):
-    ingredient = models.ForeignKey(
+    ingredients = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Ингредиент',
+        related_name='ingredient',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт',
+        related_name='ingredient',
     )
     amount = models.FloatField(
         verbose_name='Количесво',
@@ -105,4 +106,4 @@ class IngredientAmount(models.Model):
     class Meta:
         verbose_name = 'Количество ингредиента'
         verbose_name_plural = 'Количество ингредиентов'
-        unique_together = ['ingredient', 'recipe']
+        unique_together = ['ingredients', 'recipe']
