@@ -28,13 +28,13 @@ class UserSerializer(serializers.ModelSerializer):
             return False
         return user.follower.filter(author=obj).exists()
 
-    def create(self, data):
+    def create(self, validated_data):
         user = User(
-            email=data['email'],
-            username=data['username'],
-            first_name=data['first_name'],
-            last_name=data['last_name'],
+            email=validated_data['email'],
+            username=validated_data['username'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
         )
-        user.set_password(data['password'])
+        user.set_password(validated_data['password'])
         user.save()
         return user
