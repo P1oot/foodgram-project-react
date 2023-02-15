@@ -7,6 +7,10 @@ class UserSerializer(serializers.ModelSerializer):
         validators=[validators.UniqueValidator(queryset=User.objects.all())],
         required=True,
     )
+    username = serializers.CharField(
+        validators=[validators.UniqueValidator(queryset=User.objects.all())],
+        required=True,
+    )
     is_subscribed = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -38,3 +42,9 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+    
+
+class SetPasswordSerializer(serializers.Serializer):
+    model = User
+    new_password = serializers.CharField()
+    current_password = serializers.CharField()
