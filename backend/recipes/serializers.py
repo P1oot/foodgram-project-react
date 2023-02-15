@@ -4,19 +4,31 @@ from .models import Tag, Recipe, Ingredient ,IngredientAmount
 
 from rest_framework import serializers
 from django.db.models import F
-
+        
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
-        read_only_fields = ('id', 'name', 'color', 'slug')
+        read_only_fields = '__all__'
 
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
+
+
+class ShortRecipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            # 'image',
+            'cooking_time',
+        )
+        read_only_fields = '__all__'
 
 
 class RecipeSerializer(serializers.ModelSerializer):
