@@ -1,12 +1,17 @@
 from rest_framework import viewsets
 
-from .models import Tag, Recipe
-from .serializers import TagSerializer, RecipeSerializer
+from .models import Tag, Recipe, Ingredient
+from .serializers import TagSerializer, RecipeSerializer, IngredientSerializer
 
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+
+
+class IngredientViewSet(viewsets.ModelViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
