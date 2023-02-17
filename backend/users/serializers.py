@@ -1,4 +1,5 @@
 from .models import User
+from recipes.models import Recipe
 from rest_framework import serializers, validators
 
 
@@ -48,3 +49,41 @@ class SetPasswordSerializer(serializers.Serializer):
     model = User
     new_password = serializers.CharField()
     current_password = serializers.CharField()
+
+
+class ShortRecipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            # 'image',
+            'cooking_time',
+        )
+        read_only_fields = '__all__',
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    recipes = ShortRecipeSerializer(many=True, read_only=True)
+    is_subscribed = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count',
+        )
+        read_only_fields = '__all__',
+
+    def get_is_subscribed(*args):
+        return True
+    
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()

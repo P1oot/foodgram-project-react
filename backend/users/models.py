@@ -55,4 +55,3 @@ class Follow(models.Model):
                 name='unique_user_author'
             )
         ]
-        unique_together = ['user', 'author']

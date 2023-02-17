@@ -1,8 +1,8 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import User
-from .serializers import UserSerializer, SetPasswordSerializer
+from .models import User, Follow
+from .serializers import UserSerializer, SetPasswordSerializer, SubscriptionSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -26,3 +26,21 @@ class UserViewSet(viewsets.ModelViewSet):
             user.save()
             return Response(status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(methods= ('get',), detail=False)
+    def subscription(self, request):
+        user = request.user
+        data = User.objects.filter(following__user=user)
+        serializer = SubscriptionSerializer(data, many=True)
+        return Response(serializer.data)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class SubscriptionViewSet(viewsets.ModelViewSet):
+    serializer_class = SubscriptionSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = User.objects.filter(following__user=user)
+        return queryset
+
