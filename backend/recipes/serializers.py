@@ -19,18 +19,6 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'measurement_unit')
 
 
-# class ShortRecipeSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Recipe
-#         fields = (
-#             'id',
-#             'name',
-#             # 'image',
-#             'cooking_time',
-#         )
-#         read_only_fields = '__all__'
-
-
 class RecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(read_only = True, many=True)
     author = UserSerializer(read_only=True)
