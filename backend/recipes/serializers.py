@@ -40,9 +40,15 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
+        tags = self.initial_data.get('tags')
+        if not tags:
+            raise serializers.ValidationError({
+                'tags': 'Нуден хотя бы один тег'
+            })
         if not ingredients:
             raise serializers.ValidationError({
-                'ingredients': 'Нужен хоть один ингридиент для рецепта'})
+                'ingredients': 'Нужен хоть один ингридиент для рецепта'
+            })
         ingredient_list = []
         for ingredient_item in ingredients:
             ingredient = get_object_or_404(Ingredient,
@@ -56,7 +62,11 @@ class RecipeSerializer(serializers.ModelSerializer):
                     'ingredients': ('Убедитесь, что значение количества '
                                     'ингредиента больше 0')
                 })
-        data['ingredients'] = ingredients
+        # data['ingredients'] = ingredients
+        data.update({
+            'ingredients': ingredients,
+            'tags': tags,
+        })
         return data
 
     def get_ingredients(self, recipe):
@@ -75,9 +85,19 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # image = validated_data.pop('image')
+        tags_data = validated_data.pop('tags')
         ingredients_data = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
-        tags_data = self.initial_data.get('tags')
         recipe.tags.set(tags_data)
         self.create_ingredients(ingredients_data, recipe)
         return recipe
+    
+    def update(self, instance, validated_data):
+        # image = validated_data.pop('image')
+        tags_data = validated_data.pop('tags')
+        instance.tags.clear()
+        instance.tags.set(tags_data)
+        ingredients_data = validated_data.pop('ingredients')
+        IngredientAmount.objects.filter(recipe=instance).all().delete()
+        self.create_ingredients(ingredients_data, instance)
+        return super().update(instance, validated_data)
