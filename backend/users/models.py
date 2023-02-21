@@ -31,7 +31,7 @@ class User(AbstractUser):
 class Follow(models.Model):
     user = models.ForeignKey(
         User,
-        verbose_name='follower',
+        verbose_name='Фолловер',
         help_text='Фолловер',
         blank=True,
         related_name='follower',
@@ -39,7 +39,7 @@ class Follow(models.Model):
     )
     author = models.ForeignKey(
         User,
-        verbose_name='following',
+        verbose_name='Подписка',
         help_text='Избранный автор',
         blank=True,
         related_name='following',
