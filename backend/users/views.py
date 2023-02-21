@@ -16,7 +16,7 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    @action(methods=['post',], detail=False, url_path='set_password')
+    @action(methods=['post',], detail=False)
     def set_password(self, request):
         user = request.user
         serializer = SetPasswordSerializer(data=request.data)
