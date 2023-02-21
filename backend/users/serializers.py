@@ -31,10 +31,6 @@ class UserSerializer(serializers.ModelSerializer):
             'password': {'write_only': True, 'required': True}
         }
 
-    def required(value):
-        if value is None:
-            raise serializers.ValidationError('Обязательное поле')
-
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
         if user.is_anonymous:
@@ -51,7 +47,7 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
-    
+
 
 class SetPasswordSerializer(serializers.Serializer):
     model = User
@@ -92,6 +88,6 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(*args):
         return True
-    
+
     def get_recipes_count(self, obj):
         return obj.recipes.count()
