@@ -25,7 +25,15 @@ class UserSerializer(serializers.ModelSerializer):
             'password',
             'is_subscribed',
         )
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {
+            'first_name': {'required': True},
+            'last_name': {'required': True},
+            'password': {'write_only': True, 'required': True}
+        }
+
+    def required(value):
+        if value is None:
+            raise serializers.ValidationError('Обязательное поле')
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
