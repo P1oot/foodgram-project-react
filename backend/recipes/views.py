@@ -1,7 +1,8 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
+from .permissions import IsOwnerOrReadOnly
 from .models import Tag, Recipe, Ingredient, Favorites
 from .serializers import TagSerializer, RecipeSerializer, IngredientSerializer
 from users.serializers import ShortRecipeSerializer
@@ -20,11 +21,16 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    @action(methods=['post', 'delete'], detail=True)
+    @action(
+        methods=['post', 'delete'],
+        detail=True,
+        permission_classes=(permissions.IsAuthenticated,)
+    )
     def favorite(self, request, pk):
         user = request.user
         recipe = get_object_or_404(Recipe, id=pk)

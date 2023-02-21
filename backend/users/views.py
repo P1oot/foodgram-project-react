@@ -81,7 +81,7 @@ class UserViewSet(viewsets.ModelViewSet):
             follow.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
-            {'errors': 'Вы уже отписались'},
+            {'errors': 'Вы не подписаны на данного пользователя'},
             status=status.HTTP_400_BAD_REQUEST
         )
 
