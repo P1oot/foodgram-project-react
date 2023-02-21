@@ -1,10 +1,9 @@
 from django.shortcuts import get_object_or_404
 from users.serializers import UserSerializer
-from .models import Tag, Recipe, Ingredient ,IngredientAmount
-
+from .models import Tag, Recipe, Ingredient, IngredientAmount
 from rest_framework import serializers
 from django.db.models import F
-        
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,10 +19,11 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(read_only = True, many=True)
+    tags = TagSerializer(read_only=True, many=True)
     author = UserSerializer(read_only=True)
     ingredients = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField()
+
     class Meta:
         model = Recipe
         fields = (
@@ -74,13 +74,12 @@ class RecipeSerializer(serializers.ModelSerializer):
             'id', 'name', 'measurement_unit', amount=F('ingredient__amount')
         )
         return ingredients
-    
+
     def get_is_favorited(self, recipe):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
         return user.favorites.filter(recipe=recipe).exists()
-        
 
     def create_ingredients(self, ingredients, recipe):
         for ingredient in ingredients:
@@ -98,7 +97,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe.tags.set(tags_data)
         self.create_ingredients(ingredients_data, recipe)
         return recipe
-    
+
     def update(self, instance, validated_data):
         # image = validated_data.pop('image')
         tags_data = validated_data.pop('tags')
