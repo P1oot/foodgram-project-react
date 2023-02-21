@@ -106,4 +106,36 @@ class IngredientAmount(models.Model):
     class Meta:
         verbose_name = 'Количество ингредиента'
         verbose_name_plural = 'Количество ингредиентов'
-        unique_together = ['ingredients', 'recipe']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['ingredients', 'recipe'],
+                name='unique_ingredients_recipe'
+            )
+        ]
+
+
+class Favorites(models.Model):
+    user = models.ForeignKey(
+        User,
+        verbose_name='Пользователь',
+        related_name='favorites',
+        on_delete=models.CASCADE
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        verbose_name='Любимые рецепты',
+        related_name='is_favorite',
+        on_delete=models.CASCADE,
+    )
+    date_add = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Любимый рецепт'
+        verbose_name_plural = 'Любимые рецепты'
+        ordering = ['-date_add']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_user_recipe'
+            )
+        ]

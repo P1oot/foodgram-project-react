@@ -1,7 +1,10 @@
-from rest_framework import viewsets
-
-from .models import Tag, Recipe, Ingredient
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
+from .models import Tag, Recipe, Ingredient, Favorites
 from .serializers import TagSerializer, RecipeSerializer, IngredientSerializer
+from users.serializers import ShortRecipeSerializer
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -20,3 +23,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    @action(methods=['post', 'delete'], detail=True)
+    def favorite(self, request, pk):
+        user = request.user
+        recipe = get_object_or_404(Recipe, id=pk)
+        favorites = Favorites.objects.filter(user=user, recipe=recipe)
+        if request.method == 'POST':
+            if favorites.exists():
+                return Response(
+                    {'errors': 'Рецепт уже в избранном'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            Favorites.objects.create(user=user, recipe=recipe)
+            serializer = ShortRecipeSerializer(recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if favorites.exists():
+            favorites.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {'errors': 'Рецепта нет в избранном'},
+            status=status.HTTP_400_BAD_REQUEST
+        )

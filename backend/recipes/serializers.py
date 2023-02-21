@@ -23,6 +23,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(read_only = True, many=True)
     author = UserSerializer(read_only=True)
     ingredients = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
     class Meta:
         model = Recipe
         fields = (
@@ -30,7 +31,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
-            # 'is_favorited',
+            'is_favorited',
             # 'is_in_shopping_cart',
             'name',
             # 'image',
@@ -62,7 +63,6 @@ class RecipeSerializer(serializers.ModelSerializer):
                     'ingredients': ('Убедитесь, что значение количества '
                                     'ингредиента больше 0')
                 })
-        # data['ingredients'] = ingredients
         data.update({
             'ingredients': ingredients,
             'tags': tags,
@@ -74,6 +74,13 @@ class RecipeSerializer(serializers.ModelSerializer):
             'id', 'name', 'measurement_unit', amount=F('ingredient__amount')
         )
         return ingredients
+    
+    def get_is_favorited(self, recipe):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return user.favorites.filter(recipe=recipe).exists()
+        
 
     def create_ingredients(self, ingredients, recipe):
         for ingredient in ingredients:

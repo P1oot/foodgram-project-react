@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Tag, Ingredient, Recipe, IngredientAmount
+from .models import Tag, Ingredient, Recipe, IngredientAmount, Favorites
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -15,3 +15,4 @@ admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(IngredientAmount)
 admin.site.register(Recipe)
+admin.site.register(Favorites)
