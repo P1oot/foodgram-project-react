@@ -2,6 +2,7 @@ from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
+from .paginataion import PageLimitPagination
 from .permissions import IsOwnerOrReadOnly
 from .models import Tag, Recipe, Ingredient, Favorites
 from .serializers import TagSerializer, RecipeSerializer, IngredientSerializer
@@ -22,6 +23,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = (IsOwnerOrReadOnly,)
+    pagination_class = PageLimitPagination
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
