@@ -3,6 +3,17 @@ from users.serializers import UserSerializer
 from .models import Tag, Recipe, Ingredient, IngredientAmount
 from rest_framework import serializers
 from django.db.models import F
+import base64
+from django.core.files.base import ContentFile
+
+
+class Base64ImageField(serializers.ImageField):
+    def to_internal_value(self, data):
+        if isinstance(data, str) and data.startswith('data:image'):
+            format, imgstr = data.split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+        return super().to_internal_value(data)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -23,6 +34,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     ingredients = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField()
+    image = Base64ImageField()
 
     class Meta:
         model = Recipe
@@ -34,7 +46,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'is_favorited',
             # 'is_in_shopping_cart',
             'name',
-            # 'image',
+            'image',
             'text',
             'cooking_time',
         )
@@ -90,7 +102,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             )
 
     def create(self, validated_data):
-        # image = validated_data.pop('image')
         tags_data = validated_data.pop('tags')
         ingredients_data = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
@@ -99,7 +110,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
-        # image = validated_data.pop('image')
         tags_data = validated_data.pop('tags')
         instance.tags.clear()
         instance.tags.set(tags_data)

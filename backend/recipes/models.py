@@ -70,10 +70,10 @@ class Recipe(models.Model):
         verbose_name='Описание',
         help_text='Опишите блюдо и способ приготовления',
     )
-    # image = models.ImageField(
-    #     verbose_name='Картинка',
-    #     upload_to='recipe/',
-    # )
+    image = models.ImageField(
+        verbose_name='Изображение блюда',
+        upload_to='recipes/images/',
+    )
 
     class Meta:
         verbose_name = 'Рецепт'
