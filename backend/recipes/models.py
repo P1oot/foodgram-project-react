@@ -139,3 +139,30 @@ class Favorites(models.Model):
                 name='unique_user_recipe'
             )
         ]
+
+
+class ShoppingCarts(models.Model):
+    user = models.ForeignKey(
+        User,
+        verbose_name='Владелец корзины',
+        related_name='cart',
+        on_delete=models.CASCADE
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        verbose_name='Рецепты в корзине',
+        related_name='in_cart',
+        on_delete=models.CASCADE,
+    )
+    date_add = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Корзина покупок'
+        verbose_name_plural = 'Корзины покупок'
+        ordering = ['-date_add']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_user_recipe'
+            )
+        ]

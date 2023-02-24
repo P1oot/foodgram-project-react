@@ -4,7 +4,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from .paginataion import PageLimitPagination
 from .permissions import IsOwnerOrReadOnly
-from .models import Tag, Recipe, Ingredient, Favorites
+from .models import Tag, Recipe, Ingredient, Favorites, ShoppingCarts
 from .serializers import TagSerializer, RecipeSerializer, IngredientSerializer
 from users.serializers import ShortRecipeSerializer
 
@@ -51,5 +51,30 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
             {'errors': 'Рецепта нет в избранном'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    @action(
+        methods=['post', 'delete'],
+        detail=True,
+        permission_classes=(permissions.IsAuthenticated,)
+    )
+    def shopping_cart(self, request, pk):
+        user = request.user
+        recipe = get_object_or_404(Recipe, id=pk)
+        cart = ShoppingCarts.objects.filter(user=user, recipe=recipe)
+        if request.method == 'POST':
+            if cart.exists():
+                return Response(
+                    {'errors': 'Рецепт уже в корзине'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            ShoppingCarts.objects.create(user=user, recipe=recipe)
+            return Response(status=status.HTTP_201_CREATED)
+        if cart.exists():
+            cart.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {'errors': 'Рецепта нет в корзине'},
             status=status.HTTP_400_BAD_REQUEST
         )
