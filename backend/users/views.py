@@ -90,7 +90,7 @@ class UserViewSet(viewsets.ModelViewSet):
         detail=False,
         permission_classes=(permissions.IsAuthenticated,)
     )
-    def subscription(self, request):
+    def subscriptions(self, request):
         user = request.user
         data = User.objects.filter(following__user=user)
         serializer = SubscriptionSerializer(data, many=True)
