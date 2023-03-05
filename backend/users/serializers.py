@@ -61,7 +61,7 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
-            # 'image',
+            'image',
             'cooking_time',
         )
         read_only_fields = '__all__',

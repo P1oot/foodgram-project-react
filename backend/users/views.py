@@ -5,12 +5,14 @@ from rest_framework.generics import get_object_or_404
 from .models import User, Follow
 from .serializers import (UserSerializer, SetPasswordSerializer,
                           SubscriptionSerializer)
+from recipes.paginataion import PageLimitPagination
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.AllowAny,)
+    pagination_class = PageLimitPagination
 
     def get_permissions(self):
         if self.action == 'retrieve':
@@ -93,5 +95,6 @@ class UserViewSet(viewsets.ModelViewSet):
     def subscriptions(self, request):
         user = request.user
         data = User.objects.filter(following__user=user)
-        serializer = SubscriptionSerializer(data, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        pages = self.paginate_queryset(data)
+        serializer = SubscriptionSerializer(pages, many=True)
+        return self.get_paginated_response(serializer.data)
