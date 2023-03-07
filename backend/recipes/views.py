@@ -5,10 +5,12 @@ from rest_framework.response import Response
 from django.http.response import HttpResponse
 from .paginataion import PageLimitPagination
 from .permissions import IsOwnerOrReadOnly
+from .filters import AuthorAndTagFilter
 from .models import (Tag, Recipe, Ingredient, Favorites, ShoppingCarts,
                      IngredientAmount)
 from .serializers import TagSerializer, RecipeSerializer, IngredientSerializer
 from users.serializers import ShortRecipeSerializer
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -26,6 +28,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     permission_classes = (IsOwnerOrReadOnly,)
     pagination_class = PageLimitPagination
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = AuthorAndTagFilter
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
