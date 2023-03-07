@@ -1,16 +1,18 @@
-from rest_framework import viewsets, status, permissions
+from django.http.response import HttpResponse
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from django.http.response import HttpResponse
+
+from users.serializers import ShortRecipeSerializer
+
+from .filters import AuthorAndTagFilter
+from .models import (Favorites, Ingredient, IngredientAmount, Recipe,
+                     ShoppingCarts, Tag)
 from .paginataion import PageLimitPagination
 from .permissions import IsOwnerOrReadOnly
-from .filters import AuthorAndTagFilter
-from .models import (Tag, Recipe, Ingredient, Favorites, ShoppingCarts,
-                     IngredientAmount)
-from .serializers import TagSerializer, RecipeSerializer, IngredientSerializer
-from users.serializers import ShortRecipeSerializer
-from django_filters.rest_framework import DjangoFilterBackend
+from .serializers import IngredientSerializer, RecipeSerializer, TagSerializer
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -85,7 +87,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    @action(methods=['get',], detail=False)
+    @action(methods=['get', ], detail=False)
     def download_shopping_cart(self, request):
         user = request.user
         ingredients = IngredientAmount.objects.filter(

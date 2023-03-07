@@ -1,10 +1,13 @@
-from django.shortcuts import get_object_or_404
-from users.serializers import UserSerializer
-from .models import Tag, Recipe, Ingredient, IngredientAmount
-from rest_framework import serializers
-from django.db.models import F
 import base64
+
 from django.core.files.base import ContentFile
+from django.db.models import F
+from django.shortcuts import get_object_or_404
+from rest_framework import serializers
+
+from users.serializers import UserSerializer
+
+from .models import Ingredient, IngredientAmount, Recipe, Tag
 
 
 class Base64ImageField(serializers.ImageField):
@@ -83,10 +86,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         return data
 
     def get_ingredients(self, recipe):
-        ingredients = recipe.ingredients.values(
+        return recipe.ingredients.values(
             'id', 'name', 'measurement_unit', amount=F('ingredient__amount')
         )
-        return ingredients
 
     def get_is_favorited(self, recipe):
         user = self.context.get('request').user

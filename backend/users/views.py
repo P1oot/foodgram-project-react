@@ -1,11 +1,13 @@
-from rest_framework import viewsets, status, permissions
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
-from .models import User, Follow
-from .serializers import (UserSerializer, SetPasswordSerializer,
-                          SubscriptionSerializer)
+from rest_framework.response import Response
+
 from recipes.paginataion import PageLimitPagination
+
+from .models import Follow, User
+from .serializers import (SetPasswordSerializer, SubscriptionSerializer,
+                          UserSerializer)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -31,7 +33,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(
-        methods=['post',],
+        methods=['post', ],
         detail=False,
         permission_classes=(permissions.IsAuthenticated,)
     )

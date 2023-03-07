@@ -1,6 +1,8 @@
-from .models import User
-from recipes.models import Recipe
 from rest_framework import serializers, validators
+
+from recipes.models import Recipe
+
+from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
