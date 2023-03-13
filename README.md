@@ -56,4 +56,8 @@
 
 Более подробно с описанием запросов можно ознакомиться по адресу: "http://158.160.20.235/api/docs/redoc.html"
 
+## Для проверки проекта
 
+email: dan.berdinskikh@yandex.ru
+
+password: dan1234
