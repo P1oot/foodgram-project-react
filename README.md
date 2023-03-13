@@ -10,38 +10,38 @@
 ## Установка
 
 * Для установки на сервер потребуется установить Docker и Docker Compose:
-
-`sudo apt install docker-ce docker-compose -y`
-
+    ```
+    sudo apt install docker-ce docker-compose -y
+    ```
 * Склонируйте проект на сервер:
-
-`git clone git@github.com:P1oot/foodgram-project-react.git`
-
+    ```
+    git clone git@github.com:P1oot/foodgram-project-react.git
+    ```
 * В репозитории infra необходимо создать файл .env:
-```
-cd infra/
-touch .env
-nano .env
-```
+    ```
+    cd infra/
+    touch .env
+    nano .env
+    ```
 * Его необходимо заполнить следующими строками:
-```
-DB_ENGINE=django.db.backends.postgresql # указываем, что работаем с postgresql
-DB_NAME=postgres # имя базы данных
-POSTGRES_USER=postgres # логин для подключения к базе данных
-POSTGRES_PASSWORD=postgres # пароль для подключения к БД (установите свой)
-DB_HOST=db # название сервиса (контейнера)
-DB_PORT=5432 # порт для подключения к БД 
-```
+    ```
+    DB_ENGINE=django.db.backends.postgresql # указываем, что работаем с postgresql
+    DB_NAME=postgres # имя базы данных
+    POSTGRES_USER=postgres # логин для подключения к базе данных
+    POSTGRES_PASSWORD=postgres # пароль для подключения к БД (установите свой)
+    DB_HOST=db # название сервиса (контейнера)
+    DB_PORT=5432 # порт для подключения к БД 
+    ```
 * Запустить docker-compose (-d для работы в фоновом режиме):
-
-`docker-compose up -d`
-
+    ```
+    docker-compose up -d
+    ```
 * Выполнить миграции, создать суперпользователя и собрать статику:
-```
-docker-compose exec web python manage.py migrate
-docker-compose exec web python manage.py createsuperuser
-docker-compose exec web python manage.py collectstatic --no-input
-```
+    ```
+    docker-compose exec web python manage.py migrate
+    docker-compose exec web python manage.py createsuperuser
+    docker-compose exec web python manage.py collectstatic --no-input
+    ```
 * Теперь проект доступен по Вашему IP
 
 ## Примеры запросов
