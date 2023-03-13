@@ -1,6 +1,7 @@
 import base64
 
 from django.core.files.base import ContentFile
+from django.db import transaction
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -103,13 +104,16 @@ class RecipeSerializer(serializers.ModelSerializer):
         return user.cart.filter(recipe=recipe).exists()
 
     def create_ingredients(self, ingredients, recipe):
+        ingredients_list = []
         for ingredient in ingredients:
-            IngredientAmount.objects.create(
+            ingredients_list.append(IngredientAmount(
                 recipe=recipe,
                 ingredients=Ingredient.objects.get(id=ingredient.get('id')),
                 amount=ingredient.get('amount'),
-            )
+            ))
+        IngredientAmount.objects.bulk_create(ingredients_list)
 
+    @transaction.atomic
     def create(self, validated_data):
         tags_data = validated_data.pop('tags')
         ingredients_data = validated_data.pop('ingredients')
@@ -118,6 +122,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         self.create_ingredients(ingredients_data, recipe)
         return recipe
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         tags_data = validated_data.pop('tags')
         instance.tags.clear()

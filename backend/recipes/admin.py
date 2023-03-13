@@ -8,6 +8,7 @@ class IngredientsInline(admin.TabularInline):
     model = IngredientAmount
 
 
+@admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     model = Recipe
     list_display = ('name', 'author')
@@ -15,18 +16,17 @@ class RecipeAdmin(admin.ModelAdmin):
     inlines = [IngredientsInline]
 
 
+@admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'color')
 
 
+@admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('name', 'measurement_unit')
     list_filter = ('name',)
 
 
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(IngredientAmount)
-admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(Favorites)
-admin.site.register(ShoppingCarts)
+@admin.register(IngredientAmount, Favorites, ShoppingCarts)
+class SimpleAdmin(admin.ModelAdmin):
+    pass

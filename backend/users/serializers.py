@@ -89,6 +89,8 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         read_only_fields = '__all__',
 
     def get_is_subscribed(*args):
+        """В данном случае проверка не нужна, так как в view
+        происходит фильтрация по подписке"""
         return True
 
     def get_recipes_count(self, obj):

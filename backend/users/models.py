@@ -17,16 +17,16 @@ class User(AbstractUser):
         default=USER,
     )
 
-    @property
-    def is_admin(self):
-        return self.role == self.ADMIN or self.is_superuser
-
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
     def __str__(self) -> str:
         return self.username
+
+    @property
+    def is_admin(self):
+        return self.role == self.ADMIN or self.is_superuser
 
 
 class Follow(models.Model):

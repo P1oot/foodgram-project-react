@@ -62,15 +62,18 @@ class UserViewSet(viewsets.ModelViewSet):
         user = request.user
         author = get_object_or_404(User, id=pk)
         follow = Follow.objects.filter(user=user, author=author)
+        if follow.exists():
+            if request.method == 'POST':
+                return Response(
+                    {'errors': 'Вы уже подписаны на данного пользователя'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            follow.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
         if request.method == 'POST':
             if user == author:
                 return Response(
                     {'errors': 'Вы не можете подписаться на самого себя'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            if follow.exists():
-                return Response(
-                    {'errors': 'Вы уже подписаны на данного пользователя'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             Follow.objects.create(user=user, author=author)
@@ -81,9 +84,6 @@ class UserViewSet(viewsets.ModelViewSet):
                 {'errors': 'Вы не можете отписаться от самого себя'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        if follow.exists():
-            follow.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
             {'errors': 'Вы не подписаны на данного пользователя'},
             status=status.HTTP_400_BAD_REQUEST
