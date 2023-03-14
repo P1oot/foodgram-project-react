@@ -81,7 +81,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         if request.method == 'POST':
             ShoppingCarts.objects.create(user=user, recipe=recipe)
-            return Response(status=status.HTTP_201_CREATED)
+            serializer = ShortRecipeSerializer(recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(
             {'errors': 'Рецепта нет в корзине'},
             status=status.HTTP_400_BAD_REQUEST
